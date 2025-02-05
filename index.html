@@ -97,6 +97,7 @@
                 tab.classList.remove('active');
             });
             document.querySelector(`[data-tab='${tabName}']`).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>    
 </head>
