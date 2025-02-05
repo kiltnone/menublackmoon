@@ -48,6 +48,34 @@
             border-radius: 5px;
             margin-bottom: 10px;
         }
+        .tab-container {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            padding: 10px 0;
+        }
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+        .tab.active {
+            border-bottom: 2px solid #ffcc00;
+        }
+        .menu-section {
+            display: none;
+        }
+        .menu-section.active {
+            display: block;
+        }
         @media (max-width: 600px) {
             .menu-container {
                 max-width: 95%;
@@ -58,30 +86,161 @@
             }
         }
     </style>
+    <script>
+        function switchTab(tabName) {
+            document.querySelectorAll('.menu-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+            
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`[data-tab='${tabName}']`).classList.add('active');
+        }
+    </script>    
 </head>
 <body>
     <div class="menu-container">
         <h1>Our Menu</h1>
-        <div class="menu-item">
-            <img src="images/margherita.jpg" alt="Margherita Pizza">
-            <h3>Margherita Pizza <span class="price">THB 399</span></h3>
-            <p>Classic tomato, mozzarella, and basil</p>
+
+        <div id="food" class="menu-section active">
+            <h2>Recommended Dishes</h2>
+            <div class="menu-item">
+                <img src="images/spaghettiblack.JPG" alt="spaghettiblack">
+                <h3> สปาเก็ตตี้แบล็คมูน <span class="price">THB 269</span></h3>
+                <p>Blackmoon Spaghetti</p>
+            </div>
+            <div class="menu-item">
+                <img src="images/10secbeef.JPG" alt="10secbeef">
+                <h3> เนื้อทอด 10 วิ <span class="price">THB 259</span></h3>
+                <p>Quality beef fried for 10 seconds</p>
+            </div>
+            <div class="menu-item">
+                <img src="images/friedpork.jpg" alt="friedpork">
+                <h3> สามชั้นทอดน้ำปลา <span class="price">THB 199</span></h3>
+                <p>Deep-Fried Pork Belly with Fish Sauce</p>
+            </div>
+            <div class="menu-item">
+                <img src="images/shrimpfishsauce.jpg" alt="shrimpfishsauce">
+                <h3> กุ้งแช่น้ำปลา <span class="price">THB 199</span></h3>
+                <p>Shrimp Marinated in Fish Sauce</p>
+            </div>
+            <div class="menu-item">
+                <img src="images/spaghettibacon.jpg" alt="spaghettibacon">
+                <h3> สปาเก็ตตี้ผัดพริกแห้งเบค่อน <span class="price">THB 259</span></h3>
+                <p>Dried Chili & Garlic with Bacon Spaghetti</p>
+            </div>
+            <div class="menu-item">
+                <img src="images/friedriceshrimp.jpg" alt="friedriceshrimp">
+                <h3> ข้าวผัดมันกุ้ง <span class="price">THB 199</span></h3>
+                <p>Fried Rice with Shrimp Pasto</p>
+            </div>
+            <h2>Appitizers</h2>
+            <div class="menu-item">
+                <img src="images/appitizer.jpg" alt="appitizer">
+                <h3> ทาโร่ทอดกรอบ <span class="price">THB 99</span></h3>
+                <p>Crispy Taro</p>
+                <h3> ป๊อปคอร์น <span class="price">THB 99</span></h3>
+                <p>Popcorn</p>
+                <h3> ถั่วแระญี่ปุ่น <span class="price">THB 99</span></h3>
+                <p>Edamame (Green Japanese Soybean)</p>
+                <h3> ถั่วทอด <span class="price">THB 99</span></h3>
+                <p>Fried Nuts</p>
+                <h3> ช้าวเกรียบซอสพริกเผา <span class="price">THB 99</span></h3>
+                <p>Crisp Rice with Chili paste</p>
+                <h3> เฟรนซ์ฟรายส์ <span class="price">THB 119</span></h3>
+                <p>Special French Fries</p>
+                <h3> เม็ดมะม่วงหิมพานต์(ยำ) <span class="price">THB 159</span></h3>
+                <p>Cashew nuts Salad</p>
+            </div>
+            <h2>Fried Dishes</h2>
+            <div class="menu-item">
+                <img src="images/fries.jpg" alt="fries">
+                <h3> ปีกไก่ทอดเกลือ <span class="price">THB 159</span></h3>
+                <p>Chicken wings with Chili & Salt</p>
+                <h3> ลาบหมูทอด <span class="price">THB 159</span></h3>
+                <p>Deep Fried Spicy Minced Pork</p>
+                <h3> คอหมูทอดเกลือ <span class="price">THB 159</span></h3>
+                <p>Fried Pork Neck with Salt</p>
+                <h3> เอ็นข้อไก่ทอด <span class="price">THB 159</span></h3>
+                <p>Crispy Chicken Tendons</p>
+                <h3> ไก่ทอดสไปซี่ <span class="price">THB 159</span></h3>
+                <p>Spicy Fried Chicken</p>
+                <h3> หนังไก่ทอด <span class="price">THB 159</span></h3>
+                <p>Crispy Chicken Skin</p>
+                <h3> แหนมซี่โครงหมูทอด <span class="price">THB 159</span></h3>
+                <p>Fried Pork Ribs</p>
+                <h3> หมูกรอบ(น้ำจิ้มสูตรลับXO) <span class="price">THB 199</span></h3>
+                <p>Crispy Pork (XO Secret Sauce)</p>
+                <h3> คาลามารี่ <span class="price">THB 199</span></h3>
+                <p>Calamari</p>
+                <h3> เนื้อทอด 10 วิ <span class="price">THB 259</span></h3>
+                <p>Quality beef fried for 10 seconds</p>
+            </div>
+            <h2>Spicy Thai Dishes</h2>
+            <div class="menu-item">
+                <img src="images/yum.jpg" alt="yum">
+                <h3> ยำหมูยอทอด <span class="price">THB 159</span></h3>
+                <p>Fried Pork Sausage Spicy Salad</p>
+                <h3> ยำลูกชิ้น <span class="price">THB 159</span></h3>
+                <p>Fishball Spicy Salad</p>
+                <h3> ยำวุ้นเส้นทะเล <span class="price">THB 199</span></h3>
+                <p>Spicy Seafood Glass Noodle Salad</p>
+                <h3> ยำมาม่าหมูสามชั้นครอบ <span class="price">THB 199</span></h3>
+                <p>Spicy Instant Noodles Salad with Crisy Pork Belly</p>
+                <h3> หมูมะนาว <span class="price">THB 199</span></h3>
+                <p>Pork with Spicy Lime Sauce</p>
+                <h3> พล่ากุ้ง <span class="price">THB 199</span></h3>
+                <p>Shrimp Spicy Salad</p>
+                <h3> ยำทูน่า <span class="price">THB 199</span></h3>
+                <p>Spicy Tuna Salad</p>
+                <h3> กุ้งแช่น้ำปลา <span class="price">THB 199</span></h3>
+                <p>Shrimp Marinated in Fish Sauce</p>
+            </div>
+            <h2>Single Dishes</h2>
+            <div class="menu-item">
+                <img src="images/singledish.jpg" alt="singledish">
+                <h3> ข้าวกะเพราเบคอนหมูสับกระเทียบพริกแห้ง+ไข่ดาว <span class="price">THB 199</span></h3>
+                <p>Stir-Fried Bacon, Minced Pork with Basil topped Fried Egg</p>
+                <h3> ข้าวผัดมันกุ้ง <span class="price">THB 199</span></h3>
+                <p>Fried Rice with Shrimp Pasto</p>
+                <h3> ข้าวผัดมันเบคอน <span class="price">THB 199</span></h3>
+                <p>Bacon Fried Rice</p>
+                <h3> ไก่ผัดเม็ดมะม่วง <span class="price">THB 199</span></h3>
+                <p>Stir-fried Chicken with Cashew Nuts</p>
+                <h3> ข้าวหน้ากะเพราเนื้อเปื่อย+ไข่ดาว <span class="price">THB 259</span></h3>
+                <p>Rice with Stir-Fried Stewed Beef with Basil topped Fried Egg</p>
+                <h3> ต้มแซ่บกระดูกอ่อนซี่โครงหมู <span class="price">THB 259</span></h3>
+                <p>Tom Sap with Pork Ribs</p>
+                <h3> ต้มยำกุ้ง <span class="price">THB 259</span></h3>
+                <p>Tom Yum Goong</p>
+            </div>
         </div>
-        <div class="menu-item">
-            <img src="images/carbonara.jpg" alt="Spaghetti Carbonara">
-            <h3>Spaghetti Carbonara <span class="price">THB 169</span></h3>
-            <p>Traditional Italian pasta with creamy sauce</p>
+
+        <div id="drinks" class="menu-section">
+            <h2>Recommended Drinks</h2>
+            <div class="menu-item">
+                <img src="images/gintonic.jpg" alt="gintonic">
+                <h3> จิน แอนด์ โทนิค <span class="price">THB 139</span></h3>
+                <p>Gin and Tonic</p>
+            </div>
+            <div class="menu-item">
+                <img src="images/b52.jpg" alt="b52">
+                <h3> บี 52 <span class="price">THB 99</span></h3>
+                <p>B52</p>
+            </div>
+            <div class="menu-item">
+                <img src="images/soda.jpg" alt="soda">
+                <h3> โซดา <span class="price">THB 49</span></h3>
+                <p>Soda</p>
+            </div>
         </div>
-        <div class="menu-item">
-            <img src="images/salmon.jpg" alt="Grilled Salmon">
-            <h3>Grilled Salmon <span class="price">THB 259</span></h3>
-            <p>Served with seasonal vegetables</p>
-        </div>
-        <div class="menu-item">
-            <img src="images/lava_cake.jpg" alt="Chocolate Lava Cake">
-            <h3>Chocolate Lava Cake <span class="price">THB 199</span></h3>
-            <p>Warm chocolate cake with a molten center</p>
-        </div>
+
+    </div>
+    <div class="tab-container">
+        <button class="tab active" data-tab="food" onclick="switchTab('food')">Food</button>
+        <button class="tab" data-tab="drinks" onclick="switchTab('drinks')">Drinks</button>
     </div>
 </body>
 </html>
