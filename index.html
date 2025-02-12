@@ -8,7 +8,7 @@
         body {
             font-family: Arial, sans-serif;
             background-color: black;
-/*             background-image: url('https://www.behance.net/gallery/100668603/Moonlight'); */
+            background-image: url('https://www.behance.net/gallery/100668603/Moonlight');
             background-size: cover;
             background-repeat: no-repeat;
             text-align: center;
@@ -27,26 +27,55 @@
         h1 {
             color: #ffcc00;
         }
+        h2 {
+            color: #ffcc00;
+        }
         .menu-item {
-            padding: 10px;
+            /* display: flex; */
+            /* align-items: center; */
+            /* justify-content: space-between; */
+            padding: 15px;
             border-bottom: 1px solid #555;
+            /* text-align: left; */
         }
-        .menu-item:last-child {
-            border-bottom: none;
+        .menu-text {
+            flex-grow: 1;
         }
-        .menu-item h3 {
-            margin: 0;
+        .menu-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+        }
+        .menu-name {
+            font-size: 18px;
+            font-weight: bold;
             color: white;
+            text-align: left;
+            flex-grow: 1;
+        }
+        .menu-desc {
+            font-size: 14px;
+            color: #ccc;
+            text-align: left;
+            padding: 15px;
         }
         .price {
-            color: white;
+            font-size: 18px;
             font-weight: bold;
+            color: white;
+            text-align: right;
         }
         .menu-item img {
             width: 100%;
             max-width: 400px;
             border-radius: 5px;
             margin-bottom: 10px;
+            /* width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-right: 15px; */
         }
         .tab-container {
             position: fixed;
@@ -66,9 +95,10 @@
             cursor: pointer;
             border: none;
             background: none;
+            font-weight: bold;
         }
         .tab.active {
-            border-bottom: 2px solid #ffcc00;
+            border-bottom: 4px solid #ffcc00;
         }
         .menu-section {
             display: none;
@@ -109,113 +139,228 @@
             <h2>Recommended Dishes</h2>
             <div class="menu-item">
                 <img src="images/spaghettiblack.jpg" alt="spaghettiblack">
-                <h3> สปาเก็ตตี้แบล็คมูน <span class="price">THB 269</span></h3>
-                <p>Blackmoon Spaghetti</p>
+                <div class="menu-info">
+                    <div class="menu-name">สปาเก็ตตี้แบล็คมูน</div>
+                    <div class="price">THB 269</div>
+                </div>
+                <div class="menu-desc">Blackmoon Spaghetti</div>
             </div>
             <div class="menu-item">
                 <img src="images/10secbeef.jpg" alt="10secbeef">
-                <h3> เนื้อทอด 10 วิ <span class="price">THB 259</span></h3>
-                <p>Quality beef fried for 10 seconds</p>
+                <div class="menu-info">
+                    <div class="menu-name">เนื้อทอด 10 วิ</div>
+                    <div class="price">THB 259</div>
+                </div>
+                <div class="menu-desc">Quality beef fried for 10 seconds</div>
             </div>
             <div class="menu-item">
                 <img src="images/friedpork.jpg" alt="friedpork">
-                <h3> สามชั้นทอดน้ำปลา <span class="price">THB 199</span></h3>
-                <p>Deep-Fried Pork Belly with Fish Sauce</p>
+                <div class="menu-info">
+                    <div class="menu-name">สามชั้นทอดน้ำปลา </div>
+                    <div class="price">THB 199</div>
+                </div>
+                <div class="menu-desc">Deep-Fried Pork Belly with Fish Sauce</div>
             </div>
             <div class="menu-item">
                 <img src="images/shrimpfishsauce.jpg" alt="shrimpfishsauce">
-                <h3> กุ้งแช่น้ำปลา <span class="price">THB 199</span></h3>
-                <p>Shrimp Marinated in Fish Sauce</p>
+                <div class="menu-info">
+                    <div class="menu-name">กุ้งแช่น้ำปลา</div>
+                    <div class="price">THB 199</div>
+                </div>
+                <div class="menu-desc">Shrimp Marinated in Fish Sauce</div>
             </div>
             <div class="menu-item">
                 <img src="images/spaghettibacon.jpg" alt="spaghettibacon">
-                <h3> สปาเก็ตตี้ผัดพริกแห้งเบค่อน <span class="price">THB 259</span></h3>
-                <p>Dried Chili & Garlic with Bacon Spaghetti</p>
+                <div class="menu-info">
+                    <div class="menu-name">สปาเก็ตตี้ผัดพริกแห้งเบค่อน</div>
+                    <div class="price">THB 259</div>
+                </div>
+                <div class="menu-desc">Dried Chili & Garlic with Bacon Spaghetti</div>
             </div>
             <div class="menu-item">
                 <img src="images/friedriceshrimp.jpg" alt="friedriceshrimp">
-                <h3> ข้าวผัดมันกุ้ง <span class="price">THB 199</span></h3>
-                <p>Fried Rice with Shrimp Pasto</p>
+                <div class="menu-info">
+                    <div class="menu-name">ข้าวผัดมันกุ้ง</div>
+                    <div class="price">THB 199</div>
+                </div>
+                <div class="menu-desc">Fried Rice with Shrimp Pasto</div>
             </div>
             <h2>Appitizers</h2>
             <div class="menu-item">
                 <img src="images/appitizer.jpg" alt="appitizer">
-                <h3> ทาโร่ทอดกรอบ <span class="price">THB 99</span></h3>
-                <p>Crispy Taro</p>
-                <h3> ป๊อปคอร์น <span class="price">THB 99</span></h3>
-                <p>Popcorn</p>
-                <h3> ถั่วแระญี่ปุ่น <span class="price">THB 99</span></h3>
-                <p>Edamame (Green Japanese Soybean)</p>
-                <h3> ถั่วทอด <span class="price">THB 99</span></h3>
-                <p>Fried Nuts</p>
-                <h3> ช้าวเกรียบซอสพริกเผา <span class="price">THB 99</span></h3>
-                <p>Crisp Rice with Chili paste</p>
-                <h3> เฟรนซ์ฟรายส์ <span class="price">THB 119</span></h3>
-                <p>Special French Fries</p>
-                <h3> เม็ดมะม่วงหิมพานต์(ยำ) <span class="price">THB 159</span></h3>
-                <p>Cashew nuts Salad</p>
+                <div class="menu-info">
+                    <div class="menu-name">ทาโร่ทอดกรอบ</div>
+                    <div class="price">THB 99</div>
+                </div>
+                <div class="menu-desc">Crispy Taro</div>
+                <div class="menu-info">
+                    <div class="menu-name">ป๊อปคอร์น</div>
+                    <div class="price">THB 99</div>
+                </div>
+                <div class="menu-desc">Popcorn</div>
+                <div class="menu-info">
+                    <div class="menu-name">ถั่วแระญี่ปุ่น</div>
+                    <div class="price">THB 99</div>
+                </div>
+                <div class="menu-desc">Edamame (Green Japanese Soybean)</div>
+                <div class="menu-info">
+                    <div class="menu-name">ถั่วทอด</div>
+                    <div class="price">THB 99</div>
+                </div>
+                <div class="menu-desc">Fried Nuts</div>
+                <div class="menu-info">
+                    <div class="menu-name">ข้าวเกรียบซอสพริกเผา</div>
+                    <div class="price">THB 99</div>
+                </div>
+                <div class="menu-desc">Crisp Rice with Chili paste</div>
+                <div class="menu-info">
+                    <div class="menu-name">เฟรนซ์ฟรายส์</div>
+                    <div class="price">THB 119</div>
+                </div>
+                <div class="menu-desc">Special French Fries</div>
+                <div class="menu-info">
+                    <div class="menu-name">เม็ดมะม่วงหิมพานต์(ยำ)</div>
+                    <div class="price">THB 159</div>
+                </div>
+                <div class="menu-desc">Cashew nuts Salad</div>
             </div>
             <h2>Fried Dishes</h2>
             <div class="menu-item">
                 <img src="images/fries.jpg" alt="fries">
-                <h3> ปีกไก่ทอดเกลือ <span class="price">THB 159</span></h3>
-                <p>Chicken wings with Chili & Salt</p>
-                <h3> ลาบหมูทอด <span class="price">THB 159</span></h3>
-                <p>Deep Fried Spicy Minced Pork</p>
-                <h3> คอหมูทอดเกลือ <span class="price">THB 159</span></h3>
-                <p>Fried Pork Neck with Salt</p>
-                <h3> เอ็นข้อไก่ทอด <span class="price">THB 159</span></h3>
-                <p>Crispy Chicken Tendons</p>
-                <h3> ไก่ทอดสไปซี่ <span class="price">THB 159</span></h3>
-                <p>Spicy Fried Chicken</p>
-                <h3> หนังไก่ทอด <span class="price">THB 159</span></h3>
-                <p>Crispy Chicken Skin</p>
-                <h3> แหนมซี่โครงหมูทอด <span class="price">THB 159</span></h3>
-                <p>Fried Pork Ribs</p>
-                <h3> หมูกรอบ(น้ำจิ้มสูตรลับXO) <span class="price">THB 199</span></h3>
-                <p>Crispy Pork (XO Secret Sauce)</p>
-                <h3> คาลามารี่ <span class="price">THB 199</span></h3>
-                <p>Calamari</p>
-                <h3> เนื้อทอด 10 วิ <span class="price">THB 259</span></h3>
-                <p>Quality beef fried for 10 seconds</p>
+                <div class="menu-info">
+                    <div class="menu-name">ปีกไก่ทอดเกลือ</div>
+                    <div class="price">THB 159</div>
+                </div>
+                <div class="menu-desc">Chicken wings with Chili & Salt</div>
+                <div class="menu-info">
+                    <div class="menu-name">ลาบหมูทอด</div>
+                    <div class="price">THB 159</div>
+                </div>
+                <div class="menu-desc">Deep Fried Spicy Minced Pork</div>
+                <div class="menu-info">
+                    <div class="menu-name">คอหมูทอดเกลือ</div>
+                    <div class="price">THB 159</div>
+                </div>
+                <div class="menu-desc">Fried Pork Neck with Salt</div>
+                <div class="menu-info">
+                    <div class="menu-name">เอ็นข้อไก่ทอด</div>
+                    <div class="price">THB 159</div>
+                </div>
+                <div class="menu-desc">Crispy Chicken Tendons</div>
+                <div class="menu-info">
+                    <div class="menu-name">ไก่ทอดสไปซี่</div>
+                    <div class="price">THB 159</div>
+                </div>
+                <div class="menu-desc">Spicy Fried Chicken</div>
+                <div class="menu-info">
+                    <div class="menu-name">หนังไก่ทอด</div>
+                    <div class="price">THB 159</div>
+                </div>
+                <div class="menu-desc">Crispy Chicken Skin</div>
+                <div class="menu-info">
+                    <div class="menu-name">แหนมซี่โครงหมูทอด</div>
+                    <div class="price">THB 159</div>
+                </div>
+                <div class="menu-desc">Fried Sour Pork Ribs</div>
+                <div class="menu-info">
+                    <div class="menu-name">หมูกรอบ(น้ำจิ้มสูตรลับXO)</div>
+                    <div class="price">THB 199</div>
+                </div>
+                <div class="menu-desc">Crispy Pork (XO Secret Sauce)</div>
+                <div class="menu-info">
+                    <div class="menu-name">คาลามารี่</div>
+                    <div class="price">THB 199</div>
+                </div>
+                <div class="menu-desc">Calamari</div>
+                <div class="menu-info">
+                    <div class="menu-name">เนื้อทอด 10 วิ</div>
+                    <div class="price">THB 259</div>
+                </div>
+                <div class="menu-desc">Quality beef fried for 10 seconds</div>
             </div>
             <h2>Spicy Thai Dishes</h2>
             <div class="menu-item">
                 <img src="images/yum.jpg" alt="yum">
-                <h3> ยำหมูยอทอด <span class="price">THB 159</span></h3>
-                <p>Fried Pork Sausage Spicy Salad</p>
-                <h3> ยำลูกชิ้น <span class="price">THB 159</span></h3>
-                <p>Fishball Spicy Salad</p>
-                <h3> ยำวุ้นเส้นทะเล <span class="price">THB 199</span></h3>
-                <p>Spicy Seafood Glass Noodle Salad</p>
-                <h3> ยำมาม่าหมูสามชั้นกรอบ <span class="price">THB 199</span></h3>
-                <p>Spicy Instant Noodles Salad with Crisy Pork Belly</p>
-                <h3> หมูมะนาว <span class="price">THB 199</span></h3>
-                <p>Pork with Spicy Lime Sauce</p>
-                <h3> พล่ากุ้ง <span class="price">THB 199</span></h3>
-                <p>Shrimp Spicy Salad</p>
-                <h3> ยำทูน่า <span class="price">THB 199</span></h3>
-                <p>Spicy Tuna Salad</p>
-                <h3> กุ้งแช่น้ำปลา <span class="price">THB 199</span></h3>
-                <p>Shrimp Marinated in Fish Sauce</p>
+                <div class="menu-info">
+                    <div class="menu-name">ยำหมูยอทอด</div>
+                    <div class="price">THB 159</div>
+                </div>
+                <div class="menu-desc">Fried Pork Sausage Spicy Salad</div>
+                <div class="menu-info">
+                    <div class="menu-name">ยำลูกชิ้น</div>
+                    <div class="price">THB 159</div>
+                </div>
+                <div class="menu-desc">Fishball Spicy Salad</div>
+                <div class="menu-info">
+                    <div class="menu-name">ยำวุ้นเส้นทะเล</div>
+                    <div class="price">THB 199</div>
+                </div>
+                <div class="menu-desc">Spicy Seafood Glass Noodle Salad</div>
+                <div class="menu-info">
+                    <div class="menu-name">ยำมาม่าหมูสามชั้นกรอบ</div>
+                    <div class="price">THB 199</div>
+                </div>
+                <div class="menu-desc">Spicy Instant Noodles Salad with Crisy Pork Belly</div>
+                <div class="menu-info">
+                    <div class="menu-name">หมูมะนาว</div>
+                    <div class="price">THB 199</div>
+                </div>
+                <div class="menu-desc">Pork with Spicy Lime Sauce</div>
+                <div class="menu-info">
+                    <div class="menu-name">พล่ากุ้ง</div>
+                    <div class="price">THB 199</div>
+                </div>
+                <div class="menu-desc">Shrimp Spicy Salad</div>
+                <div class="menu-info">
+                    <div class="menu-name">ยำทูน่า</div>
+                    <div class="price">THB 199</div>
+                </div>
+                <div class="menu-desc">Spicy Tuna Salad</div>
+                <div class="menu-info">
+                    <div class="menu-name">กุ้งแช่น้ำปลา</div>
+                    <div class="price">THB 199</div>
+                </div>
+                <div class="menu-desc">Shrimp Marinated in Fish Sauce</div>
             </div>
             <h2>Single Dishes</h2>
             <div class="menu-item">
                 <img src="images/singledish.jpg" alt="singledish">
-                <h3> ข้าวกะเพราเบคอนหมูสับกระเทียบพริกแห้ง+ไข่ดาว <span class="price">THB 199</span></h3>
-                <p>Stir-Fried Bacon, Minced Pork with Basil topped Fried Egg</p>
-                <h3> ข้าวผัดมันกุ้ง <span class="price">THB 199</span></h3>
-                <p>Fried Rice with Shrimp Pasto</p>
-                <h3> ข้าวผัดมันเบคอน <span class="price">THB 199</span></h3>
-                <p>Bacon Fried Rice</p>
-                <h3> ไก่ผัดเม็ดมะม่วง <span class="price">THB 199</span></h3>
-                <p>Stir-fried Chicken with Cashew Nuts</p>
-                <h3> ข้าวหน้ากะเพราเนื้อเปื่อย+ไข่ดาว <span class="price">THB 259</span></h3>
-                <p>Rice with Stir-Fried Stewed Beef with Basil topped Fried Egg</p>
-                <h3> ต้มแซ่บกระดูกอ่อนซี่โครงหมู <span class="price">THB 259</span></h3>
-                <p>Tom Sap with Pork Ribs</p>
-                <h3> ต้มยำกุ้ง <span class="price">THB 259</span></h3>
-                <p>Tom Yum Goong</p>
+
+                <div class="menu-info">
+                    <div class="menu-name">ข้าวกะเพราเบคอนหมูสับกระเทียบพริกแห้ง+ไข่ดาว</div>
+                    <div class="price">THB 199</div>
+                </div>
+                <div class="menu-desc">Stir-Fried Bacon, Minced Pork with Basil topped Fried Egg</div>
+                <div class="menu-info">
+                    <div class="menu-name">ข้าวผัดมันกุ้ง</div>
+                    <div class="price">THB 199</div>
+                </div>
+                <div class="menu-desc">Fried Rice with Shrimp Pasto</div>
+                <div class="menu-info">
+                    <div class="menu-name">ข้าวผัดมันเบคอน</div>
+                    <div class="price">THB 199</div>
+                </div>
+                <div class="menu-desc">Bacon Fried Rice</div>
+                <div class="menu-info">
+                    <div class="menu-name">ไก่ผัดเม็ดมะม่วง</div>
+                    <div class="price">THB 199</div>
+                </div>
+                <div class="menu-desc">Stir-fried Chicken with Cashew Nuts</div>
+                <div class="menu-info">
+                    <div class="menu-name">ข้าวหน้ากะเพราเนื้อเปื่อย+ไข่ดาว</div>
+                    <div class="price">THB 259</div>
+                </div>
+                <div class="menu-desc">Rice with Stir-Fried Stewed Beef with Basil topped Fried Egg</div>
+                <div class="menu-info">
+                    <div class="menu-name">ต้มแซ่บกระดูกอ่อนซี่โครงหมู</div>
+                    <div class="price">THB 259</div>
+                </div>
+                <div class="menu-desc">Tom Sap with Pork Ribs</div>
+                <div class="menu-info">
+                    <div class="menu-name">ต้มยำกุ้ง</div>
+                    <div class="price">THB 259</div>
+                </div>
+                <div class="menu-desc">Tom Yum Goong</div>
             </div>
         </div>
 
@@ -223,19 +368,218 @@
             <h2>Recommended Drinks</h2>
             <div class="menu-item">
                 <img src="images/gintonic.jpg" alt="gintonic">
-                <h3> จิน แอนด์ โทนิค <span class="price">THB 139</span></h3>
-                <p>Gin and Tonic</p>
+                <div class="menu-info">
+                    <div class="menu-name">จิน แอนด์ โทนิค</div>
+                    <div class="price">THB 199</div>
+                </div>
+                <div class="menu-desc">Gin and Tonic</div>
             </div>
             <div class="menu-item">
                 <img src="images/b52.jpg" alt="b52">
-                <h3> บี 52 <span class="price">THB 99</span></h3>
-                <p>B52</p>
+                <div class="menu-info">
+                    <div class="menu-name">บี 52</div>
+                    <div class="price">THB 219</div>
+                </div>
+                <div class="menu-desc">B52</div>
+            </div>
+            
+            <h2>Draft Beers</h2>
+            <div class="menu-item">
+                <img src="images/asahi.jpg" alt="asahi">
+                <div class="menu-info">
+                    <div class="menu-name">เบียร์อาซาฮีเล็ก</div>
+                    <div class="price">THB 99</div>
+                </div>
+                <div class="menu-desc">Asahi - 355ml</div>
+                <div class="menu-info">
+                    <div class="menu-name">เบียร์อาซาฮีกลาง</div>
+                    <div class="price">THB 189</div>
+                </div>
+                <div class="menu-desc">Asahi - 640ml</div>
+                <div class="menu-info">
+                    <div class="menu-name">เบียร์อาซาฮีเหยือก</div>
+                    <div class="price">THB 279</div>
+                </div>
+                <div class="menu-desc">Asahi - 1000ml</div>
             </div>
             <div class="menu-item">
-                <img src="images/soda.jpg" alt="soda">
-                <h3> โซดา <span class="price">THB 49</span></h3>
-                <p>Soda</p>
+                <img src="images/budweiser.jpg" alt="budweiser">
+                <div class="menu-info">
+                    <div class="menu-name">เบียร์บัดไวเซอร์เล็ก</div>
+                    <div class="price">THB 99</div>
+                </div>
+                <div class="menu-desc">Budwiser - 355ml</div>
+                <div class="menu-info">
+                    <div class="menu-name">เบียร์บัดไวเซอร์กลาง</div>
+                    <div class="price">THB 189</div>
+                </div>
+                <div class="menu-desc">Budwiser - 640ml</div>
+                <div class="menu-info">
+                    <div class="menu-name">เบียร์บัดไวเซอร์เหยือก</div>
+                    <div class="price">THB 279</div>
+                </div>
+                <div class="menu-desc">Budwiser - 1000ml</div>
             </div>
+            <div class="menu-item">
+                <!-- <img src="images/budweiser.jpg" alt="appitizer"> -->
+                <div class="menu-info">
+                    <div class="menu-name">เบียร์โฮกาเด้น โรเซ่</div>
+                    <div class="price">THB 359</div>
+                </div>
+                <div class="menu-desc">Hoegaarden Rosee - Pint</div>
+            </div>
+            <h2>Bottle Beers</h2>
+            <div class="menu-item">
+                <img src="images/bottlebeer.jpg" alt="bottlebeer">
+                <div class="menu-info">
+                    <div class="menu-name">เบียร์ลีโอ</div>
+                    <div class="price">THB 159</div>
+                </div>
+                <div class="menu-desc">Leo - 620ml</div>
+                <div class="menu-info">
+                    <div class="menu-name">เบียร์สิงห์</div>
+                    <div class="price">THB 189</div>
+                </div>
+                <div class="menu-desc">Singha - 620ml</div>
+                <div class="menu-info">
+                    <div class="menu-name">เบียร์โคโรน่าเอ็กซ์ตร้า</div>
+                    <div class="price">THB 189</div>
+                </div>
+                <div class="menu-desc">Corona Extra - 355ml</div>
+            </div>
+            <h2>Soju</h2>
+            <div class="menu-item">
+                <img src="images/soju.jpg" alt="soju">
+                <div class="menu-info">
+                    <div class="menu-name">โซจู พีช</div>
+                    <div class="price">THB 259</div>
+                </div>
+                <div class="menu-desc">Soju Peach</div>
+                <div class="menu-info">
+                    <div class="menu-name">โซจู แอปเปิ้ล</div>
+                    <div class="price">THB 259</div>
+                </div>
+                <div class="menu-desc">Soju Apple</div>
+                <div class="menu-info">
+                    <div class="menu-name">โซจู องุ่น</div>
+                    <div class="price">THB 259</div>
+                </div>
+                <div class="menu-desc">Soju Grape</div>
+                <div class="menu-info">
+                    <div class="menu-name">โซจู เมล่อน</div>
+                    <div class="price">THB 259</div>
+                </div>
+                <div class="menu-desc">Soju Melon</div>
+                <div class="menu-info">
+                    <div class="menu-name">โซจู สตรอเบอร์รี่</div>
+                    <div class="price">THB 259</div>
+                </div>
+                <div class="menu-desc">Soju Strawberry</div>
+                <div class="menu-info">
+                    <div class="menu-name">โซจู ยาคูล</div>
+                    <div class="price">THB 259</div>
+                </div>
+                <div class="menu-desc">Soju Yakult</div>
+            </div>
+            <h2>Spirits</h2>
+            <div class="menu-item">
+                <img src="images/spirits.jpg" alt="spirits">
+                <div class="menu-info">
+                    <div class="menu-name">แสงโสม (แบน)</div>
+                    <div class="price">THB 459</div>
+                </div>
+                <div class="menu-desc">Sangsom</div>
+                <div class="menu-info">
+                    <div class="menu-name">รีเจนซี่ (แบน)</div>
+                    <div class="price">THB 759</div>
+                </div>
+                <div class="menu-desc">Regency - small</div>
+                <div class="menu-info">
+                    <div class="menu-name">รีเจนซี่ (กลม)</div>
+                    <div class="price">THB 1199</div>
+                </div>
+                <div class="menu-desc">Regency - large</div>
+                <div class="menu-info">
+                    <div class="menu-name">เจมสัน (แบน)</div>
+                    <div class="price">THB 599</div>
+                </div>
+                <div class="menu-desc">Jameson - small</div>
+                <div class="menu-info">
+                    <div class="menu-name">เจมสัน (กลม)</div>
+                    <div class="price">THB 1799</div>
+                </div>
+                <div class="menu-desc">Jameson - large</div>
+                <div class="menu-info">
+                    <div class="menu-name">แอปโซลูทวอดก้า</div>
+                    <div class="price">THB 1299</div>
+                </div>
+                <div class="menu-desc">Absolute Vodka</Label></div>
+                <div class="menu-info">
+                    <div class="menu-name">ชีวาส รีเกล</div>
+                    <div class="price">THB 1999</div>
+                </div>
+                <div class="menu-desc">Chivas Regal 12 years</div>
+                <div class="menu-info">
+                    <div class="menu-name">จอนนี่ วอคเกอร์ โกด์ เลเบิล</div>
+                    <div class="price">THB 2599</div>
+                </div>
+                <div class="menu-desc">Johnnie Walker - Gold Label</Label></div>
+            </div>
+            <h2>Others</h2>
+            <div class="menu-item">
+                <img src="images/soda.jpg" alt="soda">
+                <div class="menu-info">
+                    <div class="menu-name">น้ำเปล่า</div>
+                    <div class="price">THB 49</div>
+                </div>
+                <div class="menu-desc">Water</div>
+                <div class="menu-info">
+                    <div class="menu-name">โซดา</div>
+                    <div class="price">THB 49</div>
+                </div>
+                <div class="menu-desc">Soda Water</div>
+                <div class="menu-info">
+                    <div class="menu-name">โค้ก</div>
+                    <div class="price">THB 59</div>
+                </div>
+                <div class="menu-desc">Coca-cola</div>
+                <div class="menu-info">
+                    <div class="menu-name">โค้ก ซีโร่</div>
+                    <div class="price">THB 59</div>
+                </div>
+                <div class="menu-desc">Diet Coca-cola</div>
+                <div class="menu-info">
+                    <div class="menu-name">สไปร์ท</div>
+                    <div class="price">THB 59</div>
+                </div>
+                <div class="menu-desc">Sprite</div>
+                <div class="menu-info">
+                    <div class="menu-name">ชเวปส์ มะนาวโซดา</div>
+                    <div class="price">THB 59</div>
+                </div>
+                <div class="menu-desc">Schweppes Lemon</Label></div>
+                <div class="menu-info">
+                    <div class="menu-name">ชเวปส์ โทนิค</div>
+                    <div class="price">THB 59</div>
+                </div>
+                <div class="menu-desc">Schweppes Tonic</div>
+                <div class="menu-info">
+                    <div class="menu-name">ชเวปส์ จิงเจอร์ เอล</div>
+                    <div class="price">THB 59</div>
+                </div>
+                <div class="menu-desc">Schweppes Ginger Ale</Label></div>
+                <div class="menu-info">
+                    <div class="menu-name">น้ำแข็งเล็ก</div>
+                    <div class="price">THB 50</div>
+                </div>
+                <div class="menu-desc">Ice - small</div>
+                <div class="menu-info">
+                    <div class="menu-name">น้ำแข็งใหญ่</div>
+                    <div class="price">THB 80</div>
+                </div>
+                <div class="menu-desc">Ice - large</Label></div>
+            </div>
+
         </div>
 
     </div>
