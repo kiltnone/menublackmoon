@@ -648,9 +648,14 @@
 
         <div id="promo" class="menu-section">
             <h2>Promotions!</h2>
-
+            <div class="menu-item">
+                <div class="menu-desc">โปร Regency - Crowd's Favourite</div>
+                <img src="images/regency.jpg" alt="regency">
+                <div class="menu-desc">โปรวันเกิด - Everyone's Birthday is Special</div>
+                <img src="images/hbd.jpg" alt="hbd">
+            </div>
             <h2>Everyday Happy Hour</h2>
-            <p>Time limited, up to 8pm</p>
+            <h3>Time limited, up to 8pm</h3>
             <div class="menu-item">
                 <img src="images/happyhour.jpg" alt="happyhour">
                 <img src="images/happyhour1.jpg" alt="happyhour1">
@@ -688,27 +693,17 @@
             </div>
 
             <h2>Daily Special</h2>
-            <p>Only Avilable on Specific days</p>
+            <h3>Only Avilable on Specific days</h3>
 
             <div class="menu-item">
+                <div class="menu-desc">**Monday Special** - 6 bottle Singha and Ice(L) for 899</div>
+                <img src="images/mon.jpg" alt="mon">
+                <div class="menu-desc">**Tuesday Special** - 2 Soju for 339</div>
                 <img src="images/tue.jpg" alt="tue">
+                <div class="menu-desc">**Wednesday Special** - 2 Cocktails free 1 more Cocktail</div>
                 <img src="images/wed.jpg" alt="wed">
-                <!-- <div class="menu-info">
-                    <div class="menu-name">โซจู เรด ชอร์เบ</div>
-                    <div class="price">THB 239</div>
-                </div>
-                <div class="menu-desc">Soju Red Sorbet</div>
-                <div class="menu-info">
-                    <div class="menu-name">โซจู ฮันนี่ดิว เมล่อน</div>
-                    <div class="price">THB 239</div>
-                </div>
-                <div class="menu-desc">Soju Honeydew Melon</div>
-                <div class="menu-info">
-                    <div class="menu-name">โซจู บ๊วย</div>
-                    <div class="price">THB 239</div>
-                </div>
-                <div class="menu-desc">Soju Ume</div> -->
-
+                <div class="menu-desc">**Thursday Special** - 5 bottle Corona (bucket) for 777</div>
+                <img src="images/thu.jpg" alt="thu">
 
                 <p>All items are exclusive of VAT and service charge</p>
                 <br>
@@ -727,13 +722,49 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+        // Define teaser images for each day
+        const teaserImages = {
+            0: "images/sun.jpg",    // Sunday
+            1: "images/mon.jpg",    // Monday
+            2: "images/tue.jpg",   // Tuesday
+            3: "images/wed.jpg", // Wednesday
+            4: "images/thu.jpg",  // Thursday
+            5: "images/fri.jpg",    // Friday
+            6: "images/sat.jpg"   // Saturday
+        };
+        // Get the current day (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+        const today = new Date().getDay();
+        const teaserImageSrc = teaserImages[today];
+
+        // Function to check if an image exists
+        function checkImageExists(url, callback) {
+            let img = new Image();
+            img.onload = function () { callback(true); };  // Image exists
+            img.onerror = function () { callback(false); }; // Image does NOT exist
+            img.src = url;
+        }
+
+        // Check if the teaser image exists
+        checkImageExists(teaserImageSrc, function (exists) {
+            if (exists) {
+                // Create the teaser popup dynamically
+                const teaserPopup = document.createElement("div");
+                teaserPopup.id = "teaser-popup";
+                teaserPopup.innerHTML = `
+                    <img src="${teaserImageSrc}" alt="Teaser Image" id="teaser-image">
+                `;
+                document.body.appendChild(teaserPopup);
+
+                // Close the teaser popup when clicked
+                teaserPopup.addEventListener("click", function () {
+                    teaserPopup.style.display = "none";
+                });
+            }
+        });
+
         switchTab('promo');
-      const teaserPopup = document.getElementById("teaser-popup");
-  
-      // Close the popup when the user clicks anywhere on it
-      teaserPopup.addEventListener("click", function () {
-        teaserPopup.style.display = "none";
-      });
+        // const teaserPopup = document.getElementById("teaser-popup");
+
     });
   </script>
 
