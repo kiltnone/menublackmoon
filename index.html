@@ -201,7 +201,6 @@
         @media (max-width: 639px) {
             .navigation-button {
                 pointer-events: none; /* Disables click/touch events */
-                /* Removed opacity: 0.5 !important; to let JS control opacity based on disabled state */
             }
         }
         /* Styles for zoomed state */
@@ -222,7 +221,7 @@
 
     <div class="menu-container">
         <div id="mediaContainer" class="w-full h-full flex items-center justify-center">
-             <img id="menuPage" src="menu2/0.jpg" alt="Menu Page" class="menu-page">
+             <img id="menuPage" src="menu2/1.jpg" alt="Menu Page" class="menu-page">
            </div>
         
 
@@ -243,8 +242,8 @@
     const pageIndicator = document.getElementById('pageIndicator');
     const menuContainer = document.querySelector('.menu-container');
 
-    // Array of menu image/video URLs
-    const menuItems = [
+    // Original array of menu image/video URLs
+    const originalMenuItems = [
         "menu2/1.jpg",
         "menu2/2.jpg",
         "menu2/3.jpg",
@@ -253,6 +252,7 @@
         "menu2/6.jpg",
         "menu2/7.jpg",
         "menu2/8.jpg",
+        // "menu2/8.mp4", // This was commented out in your original
         "menu2/9.jpg",
         "menu2/10.jpg",
         "menu2/11.jpg",
@@ -265,52 +265,28 @@
         "menu2/18.jpg"
     ];
 
+    let menuItems = []; // This will be the array we actually use, potentially modified for Safari
+
     let currentPageIndex = 0;
     let startX = 0;
     let isSwiping = false;
     let isAnimating = false; // Flag to prevent multiple animations at once
     let isZoomed = false; // Flag for zoom state
-    let lastTap = 0; // For double-tap detection
 
     // Cache for preloaded images/videos
     const mediaCache = {};
 
     /**
-     * Attempts to play a video element, handling the returned Promise.
-     * If playback fails (e.g., due to browser autoplay policy), it attempts to
-     * switch to a corresponding image fallback.
-     * @param {HTMLVideoElement} videoElement The video element to play.
-     * @param {string} originalSrc The original source URL of the video.
+     * Detects if the current browser is Safari.
+     * @returns {boolean} True if Safari, false otherwise.
      */
-    function attemptVideoPlay(videoElement, originalSrc) {
-        const playPromise = videoElement.play();
-
-        if (playPromise !== undefined) {
-            playPromise.then(() => {
-                // Video playback successfully initiated
-                console.log(`Video started playing: ${originalSrc}`);
-            }).catch(error => {
-                // Playback failed (e.g., autoplay blocked, user gesture required)
-                console.warn(`Video playback blocked for ${originalSrc}:`, error);
-                // Fallback to image if video couldn't play
-                const fallbackImgSrc = originalSrc.replace('.mp4', '.jpg');
-                const imgElement = document.createElement('img');
-                imgElement.src = fallbackImgSrc;
-                imgElement.classList.add('menu-page');
-                // Replace the video element with the image element in the DOM
-                if (videoElement.parentNode) {
-                    console.log(`Falling back to image: ${fallbackImgSrc}`);
-                    videoElement.parentNode.replaceChild(imgElement, videoElement);
-                    // Update cache for the current index to point to the image now
-                    mediaCache[originalSrc] = imgElement; 
-                }
-            });
-        }
+    function isSafari() {
+        const userAgent = navigator.userAgent;
+        return /^((?!chrome|android).)*safari/i.test(userAgent);
     }
 
     /**
      * Creates an image or video element with necessary attributes.
-     * Includes error handling for videos to fall back to an image.
      * @param {string} src The URL of the media.
      * @returns {HTMLElement} The created <img> or <video> element.
      */
@@ -323,27 +299,16 @@
             element.setAttribute('autoplay', '');
             element.setAttribute('loop', '');
             element.setAttribute('muted', '');
-            element.setAttribute('playsinline', '');
-            element.setAttribute('preload', 'auto'); // Ensure video data is loaded
+            element.setAttribute('playsinline', ''); // Essential for iOS inline playback
+            element.setAttribute('preload', 'auto'); // Helps with loading performance
 
-            // Add error listener for network issues, corrupted file, etc.
-            element.addEventListener('error', () => {
-                console.error(`Error loading/playing video: ${src}. Attempting to load image fallback.`);
-                const fallbackImgSrc = src.replace('.mp4', '.jpg');
-                const imgElement = document.createElement('img');
-                imgElement.src = fallbackImgSrc;
-                imgElement.classList.add('menu-page');
-                // Replace the video element with the image element
-                if (element.parentNode) {
-                    element.parentNode.replaceChild(imgElement, element);
-                }
-                // Update cache for the current index to point to the image now
-                mediaCache[src] = imgElement; 
-            }, { once: true }); // Use once: true to prevent multiple listeners on cached elements
-
-            // Attempt to play immediately (handles autoplay policies via promise)
-            // This is called here for initial creation and for preloaded items.
-            attemptVideoPlay(element, src);
+            // Attempt to play and catch errors, particularly for autoplay policy
+            // This is critical if we weren't forcing JPG on Safari for videos
+            element.play().catch(error => {
+                console.warn(`Video playback prevented for ${src}:`, error);
+                // In Safari with this code, this block should ideally not be hit for the video element
+                // because we replace it with a JPG. But it's good practice for other browsers.
+            });
 
         } else {
             element = document.createElement('img');
@@ -378,8 +343,7 @@
                     tempElement.preload = 'auto';
                     tempElement.loop = true;
                     tempElement.playsinline = true;
-                    // Don't call .play() here for preloaded videos. We only cache them.
-                    // Playback will be attempted when they become the current element.
+                    // Don't call .play() for preloaded videos, just caching
                 }
                 mediaCache[url] = tempElement; // Store the element in cache
                 console.log(`Preloaded: ${url}`);
@@ -393,14 +357,7 @@
      * @param {string} animationInClass The CSS class for the "in" animation.
      */
     function handleNewMediaLoad(newMediaElement, animationInClass) {
-        // Stop any currently playing video before removing it
-        const currentMediaElement = mediaContainer.querySelector('.menu-page');
-        if (currentMediaElement && currentMediaElement.tagName === 'VIDEO') {
-            currentMediaElement.pause();
-            currentMediaElement.currentTime = 0; // Reset video to start
-        }
-
-        // Ensure the mediaContainer is ready by removing any old child
+        // Remove previous element and add new one
         while (mediaContainer.firstChild) {
             mediaContainer.removeChild(mediaContainer.firstChild);
         }
@@ -416,13 +373,8 @@
             isAnimating = false; // Animation finished, allow new animations
         }, { once: true });
 
-        // If the new element is a video, attempt to play it (this re-triggers autoplay checks)
-        if (newMediaElement.tagName === 'VIDEO') {
-            attemptVideoPlay(newMediaElement, newMediaElement.src);
-        }
-
         updateNavigationButtons();
-        preloadAdjacentMedia(currentPageIndex); // Preload adjacent on initial load/resize
+        preloadAdjacentMedia(currentPageIndex); // Preload adjacent after page change
     }
 
     /**
@@ -431,7 +383,7 @@
      */
     function updatePage(direction) {
         if (isAnimating || isZoomed) return;
-        isAnimating = true;
+        isAnimating = true; // Set animation flag at the start of the transition
 
         const animationOutClass = direction === 'next' ? 'page-animate-out-right' : 'page-animate-out-left';
         const animationInClass = direction === 'next' ? 'page-animate-in-left' : 'page-animate-in-right';
@@ -440,10 +392,10 @@
         
         // Apply the "out" animation to the current element
         if (currentMediaElement) {
-            // Pause any current video before it animates out
+            // If it's a video, pause it and reset its time before it animates out
             if (currentMediaElement.tagName === 'VIDEO') {
                 currentMediaElement.pause();
-                currentMediaElement.currentTime = 0; // Reset for next time it's viewed
+                currentMediaElement.currentTime = 0; 
             }
 
             currentMediaElement.classList.add(animationOutClass);
@@ -456,27 +408,23 @@
         const newMediaSrc = menuItems[currentPageIndex];
         let newMediaElement = mediaCache[newMediaSrc];
         
-        if (!newMediaElement || (newMediaElement.tagName === 'VIDEO' && newMediaElement.parentNode)) {
-            // If not in cache, or if a cached video is currently in the DOM (meaning it's the current one),
-            // then create a new one. This handles the case where the fallback already happened.
-            // Or, for cached elements, if they were removed (e.g., if a fallback occurred),
-            // ensure we always create the correct element type for the given src.
-            // Simplified: always create if not in cache or if it's a video and already displayed.
+        if (!newMediaElement) {
+            // If not in cache, create a new element.
             newMediaElement = createMediaElement(newMediaSrc);
-            mediaCache[newMediaSrc] = newMediaElement; // Update cache with the potentially new element (e.g., if fallback happened)
+            mediaCache[newMediaSrc] = newMediaElement;
         } else if (newMediaElement.tagName === 'VIDEO') {
-            // If it's a cached video that's not currently in the DOM, prepare it for display
-            newMediaElement.currentTime = 0; // Reset video to beginning
+            // If it's a cached video, reset it and attempt to play.
+            newMediaElement.currentTime = 0;
             newMediaElement.load(); // Ensure it's ready to play
-            // Playback will be attempted in handleNewMediaLoad
+            newMediaElement.play().catch(error => {
+                console.warn("Cached video playback prevented on transition:", error);
+            });
         }
-
-        // Delay handleNewMediaLoad to allow the 'out' animation to start if currentMediaElement exists.
-        // A simple setTimeout gives a slight buffer for the animation engine.
-        // Adjust the delay (e.g., 50ms) if animations look choppy.
+        
+        // A small delay to allow the "out" animation to start rendering before the "in" animation element is appended.
         setTimeout(() => {
             handleNewMediaLoad(newMediaElement, animationInClass);
-        }, 100); // Small delay to allow the 'out' animation to render
+        }, 100); 
     }
 
     /**
@@ -514,7 +462,7 @@
     // Touch Event Listeners for Swiping
     menuContainer.addEventListener('touchstart', (e) => {
         if (e.touches.length > 1 || isAnimating || isZoomed) {
-            isSwiping = false; // Prevent swipe if multiple fingers or during animation/zoom
+            isSwiping = false; 
             return;
         }
         isSwiping = true;
@@ -525,13 +473,12 @@
         if (!isSwiping || isAnimating || isZoomed) return;
         const currentX = e.touches[0].clientX;
         const deltaX = currentX - startX;
-        if (Math.abs(deltaX) > 10) { // Only prevent default if a significant swipe is detected
+        if (Math.abs(deltaX) > 10) { 
             e.preventDefault();
         }
-    }, { passive: false }); // passive: false is crucial for preventDefault to work
+    }, { passive: false }); 
 
     menuContainer.addEventListener('touchend', (e) => {
-        // Only proceed if it was a single touch release that started as a potential swipe
         if (e.changedTouches.length !== 1 || isAnimating || isZoomed) {
             isSwiping = false;
             return;
@@ -539,10 +486,10 @@
 
         const endX = e.changedTouches[0].clientX;
         const deltaX = endX - startX;
-        const swipeThreshold = menuContainer.offsetWidth / 5; // Responsive swipe threshold
+        const swipeThreshold = menuContainer.offsetWidth / 5; 
 
         if (isSwiping) {
-            isSwiping = false; // Reset swipe flag
+            isSwiping = false; 
 
             if (deltaX > swipeThreshold && currentPageIndex > 0) {
                 prevPage();
@@ -552,44 +499,44 @@
         }
     });
 
-    // Initialize the first page on load
+    // Initialize the first page on load or resize
     function initializePage() {
-        // Stop any existing video before clearing the container
-        const existingMedia = mediaContainer.querySelector('.menu-page');
-        if (existingMedia && existingMedia.tagName === 'VIDEO') {
-            existingMedia.pause();
-            existingMedia.currentTime = 0;
+        // --- Safari Detection and MenuItem Adjustment ---
+        if (isSafari()) {
+            menuItems = originalMenuItems.map(item => 
+                item.endsWith('.mp4') ? item.replace('.mp4', '.jpg') : item
+            );
+            console.log("Safari detected. Video URLs replaced with JPGs.");
+        } else {
+            // For non-Safari browsers, use the original array
+            menuItems = [...originalMenuItems]; 
+            console.log("Non-Safari browser. Using original media files.");
         }
+        // --- End Safari Detection ---
 
-        // Clear mediaContainer completely
+        // Ensure mediaContainer is empty before adding initial content
         while (mediaContainer.firstChild) {
             mediaContainer.removeChild(mediaContainer.firstChild);
         }
 
-        // Use createMediaElement which handles video specific logic including autoplay and fallback
         const initialMediaSrc = menuItems[currentPageIndex];
-        let initialMediaElement = mediaCache[initialMediaSrc];
+        const initialMediaElement = createMediaElement(initialMediaSrc);
+        mediaCache[initialMediaSrc] = initialMediaElement; // Cache the initial element
 
-        // If not cached, or if it's a video and the cached version was replaced by an image, re-create it
-        if (!initialMediaElement || (initialMediaElement.tagName === 'VIDEO' && initialMediaElement.src !== initialMediaSrc)) {
-            initialMediaElement = createMediaElement(initialMediaSrc);
-            mediaCache[initialMediaSrc] = initialMediaElement;
-        } else if (initialMediaElement.tagName === 'VIDEO') {
-            // For cached videos, reset them and attempt play
-            initialMediaElement.currentTime = 0;
-            initialMediaElement.load();
-            attemptVideoPlay(initialMediaElement, initialMediaSrc);
-        }
-        
         mediaContainer.appendChild(initialMediaElement);
+
         pageIndicator.textContent = `${currentPageIndex + 1} / ${menuItems.length}`;
         updateNavigationButtons();
         preloadAdjacentMedia(currentPageIndex); // Preload adjacent on initial load/resize
+        isAnimating = false; // Ensure isAnimating is false after initial load
     }
 
     // Call initializePage on load
     window.addEventListener('load', initializePage);
 
-    // Handle resize events (re-initializes to ensure proper layout, might cause brief re-flash)
+    // Handle resize events (re-initializes to ensure proper layout)
     window.addEventListener('resize', initializePage);
 </script>
+    
+</body>
+</html>
