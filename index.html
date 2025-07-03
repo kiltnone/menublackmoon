@@ -236,309 +236,360 @@
     </div>
 
 <script>
-        // Get DOM elements
-        const mediaContainer = document.getElementById('mediaContainer');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const pageIndicator = document.getElementById('pageIndicator');
-        const menuContainer = document.querySelector('.menu-container');
+    // Get DOM elements
+    const mediaContainer = document.getElementById('mediaContainer');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const pageIndicator = document.getElementById('pageIndicator');
+    const menuContainer = document.querySelector('.menu-container');
 
-        // Array of menu image/video URLs
-        const menuItems = [
-            "menu2/1.jpg",
-            "menu2/2.jpg",
-            "menu2/3.jpg",
-            "menu2/4.jpg",
-            "menu2/5.jpg",
-            "menu2/6.jpg",
-            "menu2/7.jpg",
-            "menu2/8.jpg",
-            "menu2/9.jpg",
-            "menu2/10.jpg",
-            "menu2/11.jpg",
-            "menu2/12.jpg",
-            "menu2/13.mp4", // This is where your video is
-            "menu2/14.jpg",
-            "menu2/15.jpg",
-            "menu2/16.jpg",
-            "menu2/17.jpg",
-            "menu2/18.jpg"
-        ];
+    // Array of menu image/video URLs
+    const menuItems = [
+        "menu2/1.jpg",
+        "menu2/2.jpg",
+        "menu2/3.jpg",
+        "menu2/4.jpg",
+        "menu2/5.jpg",
+        "menu2/6.jpg",
+        "menu2/7.jpg",
+        "menu2/8.jpg",
+        "menu2/9.jpg",
+        "menu2/10.jpg",
+        "menu2/11.jpg",
+        "menu2/12.jpg",
+        "menu2/13.mp4", // This is where your video is
+        "menu2/14.jpg",
+        "menu2/15.jpg",
+        "menu2/16.jpg",
+        "menu2/17.jpg",
+        "menu2/18.jpg"
+    ];
 
-        let currentPageIndex = 0;
-        let startX = 0;
-        let isSwiping = false;
-        let isAnimating = false; // Flag to prevent multiple animations at once
-        let isZoomed = false; // Flag for zoom state
-        let lastTap = 0; // For double-tap detection
+    let currentPageIndex = 0;
+    let startX = 0;
+    let isSwiping = false;
+    let isAnimating = false; // Flag to prevent multiple animations at once
+    let isZoomed = false; // Flag for zoom state
+    let lastTap = 0; // For double-tap detection
 
-        // Cache for preloaded images/videos
-        const mediaCache = {};
+    // Cache for preloaded images/videos
+    const mediaCache = {};
 
-        /**
-         * Preloads the previous and next media items into a cache.
-         * This helps reduce loading time when navigating.
-         * @param {number} currentIndex The index of the currently displayed item.
-         */
-        function preloadAdjacentMedia(currentIndex) {
-            const itemsToPreload = [];
-            if (currentIndex > 0) {
-                itemsToPreload.push(menuItems[currentIndex - 1]); // Preload previous
-            }
-            if (currentIndex < menuItems.length - 1) {
-                itemsToPreload.push(menuItems[currentIndex + 1]); // Preload next
-            }
+    /**
+     * Attempts to play a video element, handling the returned Promise.
+     * If playback fails (e.g., due to browser autoplay policy), it attempts to
+     * switch to a corresponding image fallback.
+     * @param {HTMLVideoElement} videoElement The video element to play.
+     * @param {string} originalSrc The original source URL of the video.
+     */
+    function attemptVideoPlay(videoElement, originalSrc) {
+        const playPromise = videoElement.play();
 
-            itemsToPreload.forEach(url => {
-                if (!mediaCache[url]) {
-                    const isVideo = url.endsWith('.mp4');
-                    // Create the element but don't append it to DOM yet
-                    const tempElement = isVideo ? document.createElement('video') : document.createElement('img');
-                    tempElement.src = url;
-                    if (isVideo) {
-                        tempElement.muted = true; // Mute preloaded videos (good practice)
-                        tempElement.preload = 'auto'; // Hint to load data
-                        tempElement.loop = true
-                        tempElement.playsinline = true; // Still useful for mobile
-                    }
-                    mediaCache[url] = tempElement; // Store the element in cache
-                    console.log(`Preloaded: ${url}`);
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                // Video playback successfully initiated
+                console.log(`Video started playing: ${originalSrc}`);
+            }).catch(error => {
+                // Playback failed (e.g., autoplay blocked, user gesture required)
+                console.warn(`Video playback blocked for ${originalSrc}:`, error);
+                // Fallback to image if video couldn't play
+                const fallbackImgSrc = originalSrc.replace('.mp4', '.jpg');
+                const imgElement = document.createElement('img');
+                imgElement.src = fallbackImgSrc;
+                imgElement.classList.add('menu-page');
+                // Replace the video element with the image element in the DOM
+                if (videoElement.parentNode) {
+                    console.log(`Falling back to image: ${fallbackImgSrc}`);
+                    videoElement.parentNode.replaceChild(imgElement, videoElement);
+                    // Update cache for the current index to point to the image now
+                    mediaCache[originalSrc] = imgElement; 
                 }
             });
         }
+    }
 
+    /**
+     * Creates an image or video element with necessary attributes.
+     * Includes error handling for videos to fall back to an image.
+     * @param {string} src The URL of the media.
+     * @returns {HTMLElement} The created <img> or <video> element.
+     */
+    function createMediaElement(src) {
+        const isVideo = src.endsWith('.mp4');
+        let element;
 
-        /**
-         * Creates an image or video element with necessary attributes.
-         * Includes error handling for videos to fall back to an image.
-         * @param {string} src The URL of the media.
-         * @returns {HTMLElement} The created <img> or <video> element.
-         */
-        function createMediaElement(src) {
-            const isVideo = src.endsWith('.mp4');
-            let element;
+        if (isVideo) {
+            element = document.createElement('video');
+            element.setAttribute('autoplay', '');
+            element.setAttribute('loop', '');
+            element.setAttribute('muted', '');
+            element.setAttribute('playsinline', '');
+            element.setAttribute('preload', 'auto'); // Ensure video data is loaded
 
-            if (isVideo) {
-                element = document.createElement('video');
-                element.setAttribute('autoplay', '');
-                element.setAttribute('loop', '');
-                element.setAttribute('muted', '');
-                element.setAttribute('playsinline', '');
-
-                // Error handling for video playback
-                element.addEventListener('error', () => {
-                    console.error(`Error playing video: ${src}. Attempting to load image fallback.`);
-                    const fallbackImgSrc = src.replace('.mp4', '.jpg');
-                    const imgElement = document.createElement('img');
-                    imgElement.src = fallbackImgSrc;
-                    imgElement.classList.add('menu-page');
-                    // Replace the video element with the image element
-                    if (element.parentNode) {
-                        element.parentNode.replaceChild(imgElement, element);
-                    }
-                });
-                element.play().catch(error => {
-                    // This catch block handles Promises rejected by play() (e.g., user gesture required)
-                    console.warn(`Video play() failed for ${src}:`, error);
-                    // The 'error' event listener will likely also fire, so no need to duplicate fallback logic here.
-                });
-            } else {
-                element = document.createElement('img');
-            }
-            
-            element.src = src;
-            element.classList.add('menu-page'); // Apply base styling
-            return element;
-        }
-
-
-        /**
-         * Handles the loading and display of a new media element after an animation.
-         * @param {HTMLElement} newMediaElement The newly created <img> or <video> element.
-         * @param {string} animationInClass The CSS class for the "in" animation.
-         */
-        function handleNewMediaLoad(newMediaElement, animationInClass) {
-            // Ensure the mediaContainer is ready
-            while (mediaContainer.firstChild) {
-                mediaContainer.removeChild(mediaContainer.firstChild);
-            }
-            mediaContainer.appendChild(newMediaElement);
-
-            newMediaElement.style.visibility = 'visible';
-            pageIndicator.textContent = `${currentPageIndex + 1} / ${menuItems.length}`;
-
-            newMediaElement.classList.add(animationInClass);
-            newMediaElement.addEventListener('animationend', function inHandler() {
-                newMediaElement.removeEventListener('animationend', inHandler);
-                newMediaElement.classList.remove(animationInClass);
-                isAnimating = false; // Animation finished, allow new animations
-            }, { once: true });
-
-            updateNavigationButtons();
-            // After page change, preload the next one
-            preloadAdjacentMedia(currentPageIndex);
-        }
-
-        /**
-         * Updates the displayed menu page and page indicator with animation.
-         * @param {string} direction 'next' or 'prev' for animation direction.
-         */
-        function updatePage(direction) {
-            if (isAnimating || isZoomed) return;
-            isAnimating = true;
-
-            const animationOutClass = direction === 'next' ? 'page-animate-out-right' : 'page-animate-out-left';
-            const animationInClass = direction === 'next' ? 'page-animate-in-left' : 'page-animate-in-right';
-
-            const currentMediaElement = mediaContainer.querySelector('.menu-page');
-            
-            // Add the "out" animation class to the current element
-            if (currentMediaElement) {
-                currentMediaElement.classList.add(animationOutClass);
-                // Listen for the animation to end before removing the old element
-                currentMediaElement.addEventListener('animationend', function outHandler() {
-                    currentMediaElement.removeEventListener('animationend', outHandler);
-                    // Remove the old element after its animation finishes
-                    currentMediaElement.remove();
-                }, { once: true });
-            }
-
-            const newMediaSrc = menuItems[currentPageIndex];
-            let newMediaElement = mediaCache[newMediaSrc];
-            
-            if (!newMediaElement) {
-                newMediaElement = createMediaElement(newMediaSrc);
-                mediaCache[newMediaSrc] = newMediaElement;
-            } else {
-                // If using a cached video, ensure it's reset and attempts to play
-                if (newMediaElement.tagName === 'VIDEO') {
-                    newMediaElement.currentTime = 0; // Reset video to start
-                    newMediaElement.play().catch(error => console.warn("Video playback prevented for cached video:", error));
+            // Add error listener for network issues, corrupted file, etc.
+            element.addEventListener('error', () => {
+                console.error(`Error loading/playing video: ${src}. Attempting to load image fallback.`);
+                const fallbackImgSrc = src.replace('.mp4', '.jpg');
+                const imgElement = document.createElement('img');
+                imgElement.src = fallbackImgSrc;
+                imgElement.classList.add('menu-page');
+                // Replace the video element with the image element
+                if (element.parentNode) {
+                    element.parentNode.replaceChild(imgElement, element);
                 }
-            }
-            handleNewMediaLoad(newMediaElement, animationInClass);
+                // Update cache for the current index to point to the image now
+                mediaCache[src] = imgElement; 
+            }, { once: true }); // Use once: true to prevent multiple listeners on cached elements
+
+            // Attempt to play immediately (handles autoplay policies via promise)
+            // This is called here for initial creation and for preloaded items.
+            attemptVideoPlay(element, src);
+
+        } else {
+            element = document.createElement('img');
         }
-
-        /**
-         * Navigates to the next menu page.
-         */
-        function nextPage() {
-            console.log('Next button clicked. Current index:', currentPageIndex); // Debug log
-            if (currentPageIndex < menuItems.length - 1 && !isAnimating && !isZoomed) {
-                currentPageIndex++;
-                updatePage('next');
-            } else {
-                console.log('Next navigation blocked: isAnimating=', isAnimating, 'isZoomed=', isZoomed, 'at end of menu=', currentPageIndex === menuItems.length - 1);
-            }
-        }
-
-        /**
-         * Navigates to the previous menu page.
-         */
-        function prevPage() {
-            console.log('Prev button clicked. Current index:', currentPageIndex); // Debug log
-            if (currentPageIndex > 0 && !isAnimating && !isZoomed) {
-                currentPageIndex--;
-                updatePage('prev');
-            } else {
-                console.log('Prev navigation blocked: isAnimating=', isAnimating, 'isZoomed=', isZoomed, 'at start of menu=', currentPageIndex === 0);
-            }
-        }
-
-        // Event Listeners for Navigation Buttons
-        prevBtn.addEventListener('click', prevPage);
-        nextBtn.addEventListener('click', nextPage);
-
-        function updateNavigationButtons() {
-            prevBtn.disabled = currentPageIndex === 0;
-            nextBtn.disabled = currentPageIndex === menuItems.length - 1;
-
-            prevBtn.style.opacity = prevBtn.disabled ? '0.0' : '0.5';
-            nextBtn.style.opacity = nextBtn.disabled ? '0.0' : '0.5';
-        }
-
         
-        // Refined Double-tap zoom functionality and Single-tap Play/Pause
-        menuContainer.addEventListener('touchend', (e) => {
-            const currentTime = new Date().getTime();
-            const tapLength = currentTime - lastTap;
-            const currentMedia = mediaContainer.querySelector('.menu-page');
-            const endX = e.changedTouches[0].clientX;
-            const deltaX = endX - startX;
-            const swipeThreshold = menuContainer.offsetWidth / 5;
+        element.src = src;
+        element.classList.add('menu-page'); // Apply base styling
+        return element;
+    }
 
-            // Immediately reset isSwiping if multiple fingers are still down or if it was never a single-finger start
-            if (e.touches.length > 0 || e.changedTouches.length !== 1 || isAnimating || isZoomed) {
-                isSwiping = false;
-                return;
-            }
-
-            // --- Handle Swipe Logic ---
-            if (isSwiping) { // If a swipe gesture was registered in touchmove
-                isSwiping = false; // Reset swipe flag
-
-                if (deltaX > swipeThreshold && currentPageIndex > 0) {
-                    prevPage();
-                } else if (deltaX < -swipeThreshold && currentPageIndex < menuItems.length - 1) {
-                    nextPage();
-                }
-                return; // Consume the event, don't proceed to tap logic
-            }
-
-        });
-
-
-        // Touch Event Listeners for Swiping
-        menuContainer.addEventListener('touchstart', (e) => {
-            // New check: if more than one finger, don't start swipe
-            if (e.touches.length > 1) {
-                isSwiping = false; // Ensure swipe is reset if multiple fingers are used
-                console.log('Multiple fingers detected, swipe prevented.');
-                return;
-            }
-
-            if (isAnimating || isZoomed) return;
-            isSwiping = true;
-            startX = e.touches[0].clientX;
-            console.log('Touch Start:', startX); // Debug log
-        });
-
-        menuContainer.addEventListener('touchmove', (e) => {
-            if (!isSwiping || isAnimating || isZoomed) return;
-            const currentX = e.touches[0].clientX;
-            const deltaX = currentX - startX;
-            if (Math.abs(deltaX) > 10) {
-                e.preventDefault();
-            }
-        }, { passive: false });
-
-
-        // Initialize the first page on load or resize
-        function initializePage() {
-            // Ensure mediaContainer is empty before adding initial content
-            while (mediaContainer.firstChild) {
-                mediaContainer.removeChild(mediaContainer.firstChild);
-            }
-
-            const initialMediaSrc = menuItems[currentPageIndex];
-            const initialMediaElement = createMediaElement(initialMediaSrc);
-            mediaCache[initialMediaSrc] = initialMediaElement; // Cache the initial element
-
-            mediaContainer.appendChild(initialMediaElement);
-
-            pageIndicator.textContent = `${currentPageIndex + 1} / ${menuItems.length}`;
-            updateNavigationButtons();
-            preloadAdjacentMedia(currentPageIndex); // Preload adjacent on initial load/resize
+    /**
+     * Preloads the previous and next media items into a cache.
+     * This helps reduce loading time when navigating.
+     * @param {number} currentIndex The index of the currently displayed item.
+     */
+    function preloadAdjacentMedia(currentIndex) {
+        const itemsToPreload = [];
+        if (currentIndex > 0) {
+            itemsToPreload.push(menuItems[currentIndex - 1]); // Preload previous
+        }
+        if (currentIndex < menuItems.length - 1) {
+            itemsToPreload.push(menuItems[currentIndex + 1]); // Preload next
         }
 
-        // Call initializePage on load
-        window.addEventListener('load', initializePage);
-
-        // Handle resize events to adjust button state based on screen size
-        window.addEventListener('resize', () => {
-            initializePage(); // Re-initialize page on resize
+        itemsToPreload.forEach(url => {
+            if (!mediaCache[url]) {
+                const isVideo = url.endsWith('.mp4');
+                const tempElement = isVideo ? document.createElement('video') : document.createElement('img');
+                tempElement.src = url;
+                if (isVideo) {
+                    tempElement.muted = true;
+                    tempElement.preload = 'auto';
+                    tempElement.loop = true;
+                    tempElement.playsinline = true;
+                    // Don't call .play() here for preloaded videos. We only cache them.
+                    // Playback will be attempted when they become the current element.
+                }
+                mediaCache[url] = tempElement; // Store the element in cache
+                console.log(`Preloaded: ${url}`);
+            }
         });
-    </script>
-    
-</body>
-</html>
+    }
+
+    /**
+     * Handles the loading and display of a new media element after an animation.
+     * @param {HTMLElement} newMediaElement The newly created <img> or <video> element.
+     * @param {string} animationInClass The CSS class for the "in" animation.
+     */
+    function handleNewMediaLoad(newMediaElement, animationInClass) {
+        // Stop any currently playing video before removing it
+        const currentMediaElement = mediaContainer.querySelector('.menu-page');
+        if (currentMediaElement && currentMediaElement.tagName === 'VIDEO') {
+            currentMediaElement.pause();
+            currentMediaElement.currentTime = 0; // Reset video to start
+        }
+
+        // Ensure the mediaContainer is ready by removing any old child
+        while (mediaContainer.firstChild) {
+            mediaContainer.removeChild(mediaContainer.firstChild);
+        }
+        mediaContainer.appendChild(newMediaElement);
+
+        newMediaElement.style.visibility = 'visible';
+        pageIndicator.textContent = `${currentPageIndex + 1} / ${menuItems.length}`;
+
+        newMediaElement.classList.add(animationInClass);
+        newMediaElement.addEventListener('animationend', function inHandler() {
+            newMediaElement.removeEventListener('animationend', inHandler);
+            newMediaElement.classList.remove(animationInClass);
+            isAnimating = false; // Animation finished, allow new animations
+        }, { once: true });
+
+        // If the new element is a video, attempt to play it (this re-triggers autoplay checks)
+        if (newMediaElement.tagName === 'VIDEO') {
+            attemptVideoPlay(newMediaElement, newMediaElement.src);
+        }
+
+        updateNavigationButtons();
+        preloadAdjacentMedia(currentPageIndex); // Preload adjacent on initial load/resize
+    }
+
+    /**
+     * Updates the displayed menu page and page indicator with animation.
+     * @param {string} direction 'next' or 'prev' for animation direction.
+     */
+    function updatePage(direction) {
+        if (isAnimating || isZoomed) return;
+        isAnimating = true;
+
+        const animationOutClass = direction === 'next' ? 'page-animate-out-right' : 'page-animate-out-left';
+        const animationInClass = direction === 'next' ? 'page-animate-in-left' : 'page-animate-in-right';
+
+        const currentMediaElement = mediaContainer.querySelector('.menu-page');
+        
+        // Apply the "out" animation to the current element
+        if (currentMediaElement) {
+            // Pause any current video before it animates out
+            if (currentMediaElement.tagName === 'VIDEO') {
+                currentMediaElement.pause();
+                currentMediaElement.currentTime = 0; // Reset for next time it's viewed
+            }
+
+            currentMediaElement.classList.add(animationOutClass);
+            currentMediaElement.addEventListener('animationend', function outHandler() {
+                currentMediaElement.removeEventListener('animationend', outHandler);
+                currentMediaElement.remove(); // Remove the old element after its animation finishes
+            }, { once: true });
+        }
+
+        const newMediaSrc = menuItems[currentPageIndex];
+        let newMediaElement = mediaCache[newMediaSrc];
+        
+        if (!newMediaElement || (newMediaElement.tagName === 'VIDEO' && newMediaElement.parentNode)) {
+            // If not in cache, or if a cached video is currently in the DOM (meaning it's the current one),
+            // then create a new one. This handles the case where the fallback already happened.
+            // Or, for cached elements, if they were removed (e.g., if a fallback occurred),
+            // ensure we always create the correct element type for the given src.
+            // Simplified: always create if not in cache or if it's a video and already displayed.
+            newMediaElement = createMediaElement(newMediaSrc);
+            mediaCache[newMediaSrc] = newMediaElement; // Update cache with the potentially new element (e.g., if fallback happened)
+        } else if (newMediaElement.tagName === 'VIDEO') {
+            // If it's a cached video that's not currently in the DOM, prepare it for display
+            newMediaElement.currentTime = 0; // Reset video to beginning
+            newMediaElement.load(); // Ensure it's ready to play
+            // Playback will be attempted in handleNewMediaLoad
+        }
+
+        // Delay handleNewMediaLoad to allow the 'out' animation to start if currentMediaElement exists.
+        // A simple setTimeout gives a slight buffer for the animation engine.
+        // Adjust the delay (e.g., 50ms) if animations look choppy.
+        setTimeout(() => {
+            handleNewMediaLoad(newMediaElement, animationInClass);
+        }, 100); // Small delay to allow the 'out' animation to render
+    }
+
+    /**
+     * Navigates to the next menu page.
+     */
+    function nextPage() {
+        if (currentPageIndex < menuItems.length - 1 && !isAnimating && !isZoomed) {
+            currentPageIndex++;
+            updatePage('next');
+        }
+    }
+
+    /**
+     * Navigates to the previous menu page.
+     */
+    function prevPage() {
+        if (currentPageIndex > 0 && !isAnimating && !isZoomed) {
+            currentPageIndex--;
+            updatePage('prev');
+        }
+    }
+
+    // Event Listeners for Navigation Buttons
+    prevBtn.addEventListener('click', prevPage);
+    nextBtn.addEventListener('click', nextPage);
+
+    function updateNavigationButtons() {
+        prevBtn.disabled = currentPageIndex === 0;
+        nextBtn.disabled = currentPageIndex === menuItems.length - 1;
+
+        prevBtn.style.opacity = prevBtn.disabled ? '0.0' : '0.5';
+        nextBtn.style.opacity = nextBtn.disabled ? '0.0' : '0.5';
+    }
+
+    // Touch Event Listeners for Swiping
+    menuContainer.addEventListener('touchstart', (e) => {
+        if (e.touches.length > 1 || isAnimating || isZoomed) {
+            isSwiping = false; // Prevent swipe if multiple fingers or during animation/zoom
+            return;
+        }
+        isSwiping = true;
+        startX = e.touches[0].clientX;
+    });
+
+    menuContainer.addEventListener('touchmove', (e) => {
+        if (!isSwiping || isAnimating || isZoomed) return;
+        const currentX = e.touches[0].clientX;
+        const deltaX = currentX - startX;
+        if (Math.abs(deltaX) > 10) { // Only prevent default if a significant swipe is detected
+            e.preventDefault();
+        }
+    }, { passive: false }); // passive: false is crucial for preventDefault to work
+
+    menuContainer.addEventListener('touchend', (e) => {
+        // Only proceed if it was a single touch release that started as a potential swipe
+        if (e.changedTouches.length !== 1 || isAnimating || isZoomed) {
+            isSwiping = false;
+            return;
+        }
+
+        const endX = e.changedTouches[0].clientX;
+        const deltaX = endX - startX;
+        const swipeThreshold = menuContainer.offsetWidth / 5; // Responsive swipe threshold
+
+        if (isSwiping) {
+            isSwiping = false; // Reset swipe flag
+
+            if (deltaX > swipeThreshold && currentPageIndex > 0) {
+                prevPage();
+            } else if (deltaX < -swipeThreshold && currentPageIndex < menuItems.length - 1) {
+                nextPage();
+            }
+        }
+    });
+
+    // Initialize the first page on load
+    function initializePage() {
+        // Stop any existing video before clearing the container
+        const existingMedia = mediaContainer.querySelector('.menu-page');
+        if (existingMedia && existingMedia.tagName === 'VIDEO') {
+            existingMedia.pause();
+            existingMedia.currentTime = 0;
+        }
+
+        // Clear mediaContainer completely
+        while (mediaContainer.firstChild) {
+            mediaContainer.removeChild(mediaContainer.firstChild);
+        }
+
+        // Use createMediaElement which handles video specific logic including autoplay and fallback
+        const initialMediaSrc = menuItems[currentPageIndex];
+        let initialMediaElement = mediaCache[initialMediaSrc];
+
+        // If not cached, or if it's a video and the cached version was replaced by an image, re-create it
+        if (!initialMediaElement || (initialMediaElement.tagName === 'VIDEO' && initialMediaElement.src !== initialMediaSrc)) {
+            initialMediaElement = createMediaElement(initialMediaSrc);
+            mediaCache[initialMediaSrc] = initialMediaElement;
+        } else if (initialMediaElement.tagName === 'VIDEO') {
+            // For cached videos, reset them and attempt play
+            initialMediaElement.currentTime = 0;
+            initialMediaElement.load();
+            attemptVideoPlay(initialMediaElement, initialMediaSrc);
+        }
+        
+        mediaContainer.appendChild(initialMediaElement);
+        pageIndicator.textContent = `${currentPageIndex + 1} / ${menuItems.length}`;
+        updateNavigationButtons();
+        preloadAdjacentMedia(currentPageIndex); // Preload adjacent on initial load/resize
+    }
+
+    // Call initializePage on load
+    window.addEventListener('load', initializePage);
+
+    // Handle resize events (re-initializes to ensure proper layout, might cause brief re-flash)
+    window.addEventListener('resize', initializePage);
+</script>
