@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurant Menu</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom CSS for page-turn animation and responsiveness */
@@ -221,25 +220,18 @@
 </head>
 <body>
 
-    <!-- Menu Container -->
     <div class="menu-container">
-        <!-- Main Menu Image -->
-         <div id="mediaContainer" class="w-full h-full flex items-center justify-center">
-            <img id="menuPage" src="menu2/0.jpg" alt="Menu Page" class="menu-page">
-         </div>
+        <div id="mediaContainer" class="w-full h-full flex items-center justify-center">
+             <img id="menuPage" src="menu2/0.jpg" alt="Menu Page" class="menu-page">
+           </div>
         
 
-        <!-- Previous Button -->
         <button id="prevBtn" class="navigation-button prev-button focus:outline-none">
-            &#8249; <!-- Left arrow HTML entity -->
-        </button>
+            &#8249; </button>
 
-        <!-- Next Button -->
         <button id="nextBtn" class="navigation-button next-button focus:outline-none">
-            &#8250; <!-- Right arrow HTML entity -->
-        </button>
+            &#8250; </button>
 
-        <!-- Page Indicator -->
         <div id="pageIndicator" class="page-indicator">1 / 1</div>
     </div>
 
@@ -261,18 +253,16 @@
             "menu2/6.jpg",
             "menu2/7.jpg",
             "menu2/8.jpg",
-            // "menu2/8.mp4", // This is where your video is
             "menu2/9.jpg",
             "menu2/10.jpg",
             "menu2/11.jpg",
             "menu2/12.jpg",
-            "menu2/13.mp4",
+            "menu2/13.mp4", // This is where your video is
             "menu2/14.jpg",
             "menu2/15.jpg",
             "menu2/16.jpg",
             "menu2/17.jpg",
             "menu2/18.jpg"
-
         ];
 
         let currentPageIndex = 0;
@@ -310,8 +300,6 @@
                         tempElement.preload = 'auto'; // Hint to load data
                         tempElement.loop = true
                         tempElement.playsinline = true; // Still useful for mobile
-                        // tempElement.play();
-                        // Don't call .play() here for preloaded videos, it's just for caching.
                     }
                     mediaCache[url] = tempElement; // Store the element in cache
                     console.log(`Preloaded: ${url}`);
@@ -322,24 +310,44 @@
 
         /**
          * Creates an image or video element with necessary attributes.
+         * Includes error handling for videos to fall back to an image.
          * @param {string} src The URL of the media.
-         * @param {boolean} forAnimation If true, this element is for the "out" animation, so don't autoplay video.
          * @returns {HTMLElement} The created <img> or <video> element.
          */
-        function createMediaElement(src, forAnimation = false) {
+        function createMediaElement(src) {
             const isVideo = src.endsWith('.mp4');
-            const element = isVideo ? document.createElement('video') : document.createElement('img');
-            element.src = src;
-            element.classList.add('menu-page'); // Apply base styling
+            let element;
 
             if (isVideo) {
+                element = document.createElement('video');
                 element.setAttribute('autoplay', '');
                 element.setAttribute('loop', '');
                 element.setAttribute('muted', '');
                 element.setAttribute('playsinline', '');
-                element.play();
 
+                // Error handling for video playback
+                element.addEventListener('error', () => {
+                    console.error(`Error playing video: ${src}. Attempting to load image fallback.`);
+                    const fallbackImgSrc = src.replace('.mp4', '.jpg');
+                    const imgElement = document.createElement('img');
+                    imgElement.src = fallbackImgSrc;
+                    imgElement.classList.add('menu-page');
+                    // Replace the video element with the image element
+                    if (element.parentNode) {
+                        element.parentNode.replaceChild(imgElement, element);
+                    }
+                });
+                element.play().catch(error => {
+                    // This catch block handles Promises rejected by play() (e.g., user gesture required)
+                    console.warn(`Video play() failed for ${src}:`, error);
+                    // The 'error' event listener will likely also fire, so no need to duplicate fallback logic here.
+                });
+            } else {
+                element = document.createElement('img');
             }
+            
+            element.src = src;
+            element.classList.add('menu-page'); // Apply base styling
             return element;
         }
 
@@ -382,31 +390,33 @@
             const animationOutClass = direction === 'next' ? 'page-animate-out-right' : 'page-animate-out-left';
             const animationInClass = direction === 'next' ? 'page-animate-in-left' : 'page-animate-in-right';
 
-            // Get the current media element for the "out" animation
             const currentMediaElement = mediaContainer.querySelector('.menu-page');
-            console.log(currentMediaElement)
+            
+            // Add the "out" animation class to the current element
+            if (currentMediaElement) {
+                currentMediaElement.classList.add(animationOutClass);
+                // Listen for the animation to end before removing the old element
+                currentMediaElement.addEventListener('animationend', function outHandler() {
+                    currentMediaElement.removeEventListener('animationend', outHandler);
+                    // Remove the old element after its animation finishes
+                    currentMediaElement.remove();
+                }, { once: true });
+            }
 
             const newMediaSrc = menuItems[currentPageIndex];
             let newMediaElement = mediaCache[newMediaSrc];
+            
             if (!newMediaElement) {
-                newMediaElement = createMediaElement(newMediaSrc, false);
+                newMediaElement = createMediaElement(newMediaSrc);
                 mediaCache[newMediaSrc] = newMediaElement;
-            }
-            handleNewMediaLoad(newMediaElement, animationInClass);
-            if (newMediaSrc.endsWith('.mp4')) {
-                // newMediaElement.currentTime = 0; // Ensure video starts from beginning for loop
-                // The play logic is primarily within createMediaElement,
-                // but re-trigger it here for cached videos just in case.
-                console.log('test.');
-                // initializePage();
-                newMediaElement.addEventListener('canplaythrough', function playHandler() {
-                    this.removeEventListener('canplaythrough', playHandler);
-                    this.play().catch(error => console.warn("Video playback prevented on transition (canplaythrough):", error));
-                }, { once: true });
-                if (newMediaElement.readyState >= 3) {
-                    newMediaElement.play().catch(error => console.warn("Video playback prevented on transition (ready state):", error));
+            } else {
+                // If using a cached video, ensure it's reset and attempts to play
+                if (newMediaElement.tagName === 'VIDEO') {
+                    newMediaElement.currentTime = 0; // Reset video to start
+                    newMediaElement.play().catch(error => console.warn("Video playback prevented for cached video:", error));
                 }
             }
+            handleNewMediaLoad(newMediaElement, animationInClass);
         }
 
         /**
@@ -511,8 +521,7 @@
             }
 
             const initialMediaSrc = menuItems[currentPageIndex];
-            // Pass 'false' for forAnimation to ensure autoplay logic is applied
-            const initialMediaElement = createMediaElement(initialMediaSrc, false);
+            const initialMediaElement = createMediaElement(initialMediaSrc);
             mediaCache[initialMediaSrc] = initialMediaElement; // Cache the initial element
 
             mediaContainer.appendChild(initialMediaElement);
@@ -520,8 +529,6 @@
             pageIndicator.textContent = `${currentPageIndex + 1} / ${menuItems.length}`;
             updateNavigationButtons();
             preloadAdjacentMedia(currentPageIndex); // Preload adjacent on initial load/resize
-
-
         }
 
         // Call initializePage on load
